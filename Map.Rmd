@@ -1,0 +1,42 @@
+---
+title: "Income Map"
+author: "Leena Ambady"
+date: "4/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidycensus)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(scales)
+census_api_key("41e31e7dc9f4be0cac86dd847ae1e2e19837090b")
+```
+
+```{r, include = FALSE}
+median_income_ca <- get_acs(geography = "county",
+                        variables = "B19013_001",
+                        state = "CA",
+                        output = "wide",
+                  year = 2018,
+                  geometry = TRUE) %>%
+  mutate(med_income = B19013_001E[])
+
+```
+
+```{r}
+median_income_ca %>%
+  ggplot(aes(fill = med_income)) + 
+  geom_sf() +
+  scale_fill_viridis_c(option = "plasma",
+                       direction = -1,
+                       labels = comma) +
+  labs(title = "Median Income by County in California",
+       caption = "Source: American Communities Survey 2018",
+       fill = "Median Income") +
+  theme_void() +
+ scale_color_gradientn(colors = "plasma", limits = c(40000, 120000)) 
+```
+
